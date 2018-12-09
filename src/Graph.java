@@ -5,6 +5,7 @@ public class Graph {
     public int numEdge;
     public int[] Mark;
     public int[] Indegree;
+    public Dist[][] Distance;
     public final int INFINITY = 100000000;
     public final int UNVISITED = 0;
     public final int VISITED = 1;
@@ -139,42 +140,41 @@ public class Graph {
         return oneEdge.weight;
     }
 
-    public Dist[][] Floyd(Graph G) {
+    public void Floyd(Graph G) {
         int i, j, v;
-        Dist[][] D = new Dist[G.VerticesNum()][G.VerticesNum()];
+        Distance = new Dist[G.VerticesNum()][G.VerticesNum()];
         for (i = 0; i < G.VerticesNum(); i++) {
             for (j = 0; j < G.VerticesNum(); j++) {
-                D[i][j] = new Dist();
+                Distance[i][j] = new Dist();
             }
         }
         for (i = 0; i < G.VerticesNum(); i++) {
             for (j = 0; j < G.VerticesNum(); j++) {
                 if (i == j) {
-                    D[i][j].length = 0;
-                    D[i][j].pre = i;
+                    Distance[i][j].length = 0;
+                    Distance[i][j].pre = i;
                 } else {
-                    D[i][j].length = INFINITY;
-                    D[i][j].pre = -1;
+                    Distance[i][j].length = INFINITY;
+                    Distance[i][j].pre = -1;
                 }
             }
         }
         for (v = 0; v < G.VerticesNum(); v++) {
             for (Edge e = G.FirstEdge(v); G.isEdge(e); e = G.NextEdge(e)) {
-                D[v][G.ToVertex(e)].length = G.Weight(e);
-                D[v][G.ToVertex(e)].pre = v;
+                Distance[v][G.ToVertex(e)].length = G.Weight(e);
+                Distance[v][G.ToVertex(e)].pre = v;
             }
         }
         for (v = 0; v < G.VerticesNum(); v++) {
             for (i = 0; i < G.VerticesNum(); i++) {
                 for (j = 0; j < G.VerticesNum(); j++) {
-                    if (D[i][j].length > D[i][v].length + D[v][j].length) {
-                        D[i][j].length = D[i][v].length + D[v][j].length;
-                        D[i][j].pre = D[v][j].pre;
+                    if (Distance[i][j].length > Distance[i][v].length + Distance[v][j].length) {
+                        Distance[i][j].length = Distance[i][v].length + Distance[v][j].length;
+                        Distance[i][j].pre = Distance[v][j].pre;
                     }
                 }
             }
         }
-        return D;
     }
 
     public int minVertex(Dist[] D) {
