@@ -20,7 +20,8 @@ public class picturePanel extends JPanel {
     public final int DRAWPOINT = 1;
     public final int DELETEPOINT = 2;
     public final int ADDEDGE = 3;
-    public final int SHORTESTPATH = 4;
+    public final int DELETEEDGE = 4;
+    public final int SHORTESTPATH = 5;
 
     public picturePanel(Graph g, InfoCatcher i) {
         super();
@@ -46,7 +47,7 @@ public class picturePanel extends JPanel {
     public void setEdgeWeight(int weight) {
         this.edgeWeight = weight;
     }
-    
+
     public void setPaintMode(int mode) {
         this.paintMode = mode;
     }
@@ -76,6 +77,9 @@ public class picturePanel extends JPanel {
         case ADDEDGE:
             this.addEdge();
             break;
+        case DELETEEDGE:
+            this.delEdge();
+            break;
         case SHORTESTPATH:
             this.shortestPath(g);
             break;
@@ -88,34 +92,22 @@ public class picturePanel extends JPanel {
         g2.clearRect(0, 0, this.getWidth(), this.getHeight());
         Ellipse2D circle = new Ellipse2D.Double();
         for (int i = 0; i < 20; i++) {
-            if (info.x[i] != -100) {
-                circle.setFrame(info.x[i] - 30, info.y[i] - 30, 60, 60);
+            if (info.getX(i) != -100) {
+                circle.setFrame(info.getX(i) - 30, info.getY(i) - 30, 60, 60);
                 g2.draw(circle);
             }
         }
         for (int i = 0; i < 20; i++) {
             for (Edge edge = graph.FirstEdge(i); graph.isEdge(edge); edge = graph.NextEdge(edge)) {
-                Point2D from = new Point2D.Double(info.x[edge.from], info.y[edge.from]);
-                Point2D to = new Point2D.Double(info.x[edge.to], info.y[edge.to]);
+                Point2D from = new Point2D.Double(info.getX(edge.from), info.getY(edge.from));
+                Point2D to = new Point2D.Double(info.getX(edge.to), info.getY(edge.to));
                 if (from.getX() >= 0 && to.getX() >= 0) {
                     g2.draw(new Line2D.Double(from, to));
-                    g2.drawString("" + edge.weight, (info.x[edge.from] + info.x[edge.to]) / 2 - 15,
-                            (info.y[edge.from] + info.y[edge.to]) / 2 - 15);
+                    g2.drawString("" + edge.weight, (info.getX(edge.from) + info.getX(edge.to)) / 2 - 15,
+                            (info.getY(edge.from) + info.getY(edge.to)) / 2 - 15);
                 }
             }
         }
-        this.addMouseListener(new MouseAdapter() {
-            @Override
-            public void mouseClicked(MouseEvent event) {
-                for (int i = 0; i < 20; i++) {
-                    if (event.getX() >= info.x[i] - 30 && event.getX() <= info.x[i] + 30
-                            && event.getY() >= info.y[i] - 30 && event.getY() <= info.y[i] + 30) {
-                        index = i;
-                        break;
-                    }
-                }
-            }
-        });
     }
 
     private void paintPoint() {
@@ -124,19 +116,19 @@ public class picturePanel extends JPanel {
             public void mouseClicked(MouseEvent event) {
                 int i = 0;
                 for (i = 0; i < 20; i++) {
-                    if (info.x[i] == -100) {
+                    if (info.getX(i) == -100) {
                         break;
                     }
                 }
                 if (i < 20) {
-                    info.x[i] = event.getX();
-                    info.y[i] = event.getY();
+                    info.setX(event.getX(), i);
+                    info.setY(event.getY(), i);
                 }
                 setPaintMode(DRAWMAP);
                 paintComponent();
             }
         });
-
+        setPaintMode(DRAWMAP);
     }
 
     private void deletePoint() {
@@ -145,17 +137,17 @@ public class picturePanel extends JPanel {
             public void mouseClicked(MouseEvent event) {
                 int i = 0;
                 for (i = 0; i < 20; i++) {
-                    if (event.getX() >= info.x[i] - 30 && event.getX() <= info.x[i] + 30
-                            && event.getY() >= info.y[i] - 30 && event.getY() <= info.y[i] + 30) {
+                    if (event.getX() >= info.getX(i) - 30 && event.getX() <= info.getX(i) + 30
+                            && event.getY() >= info.getY(i) - 30 && event.getY() <= info.getY(i) + 30) {
                         Graphics2D g = (Graphics2D) getGraphics();
-                        g.clearRect(info.x[i] - 30, info.y[i] - 30, 61, 61);
+                        g.clearRect(info.getX(i) - 30, info.getY(i) - 30, 61, 61);
                         g.clearRect(event.getX() - 30, event.getY() - 30, 61, 61);
-                        info.name[i] = "defaultName";
-                        info.addr[i] = "defaultAddr";
-                        info.tel[i] = "00000000";
-                        info.x[i] = -100;
-                        info.y[i] = -100;
-                        info.isCapital[i] = false;
+                        info.setName("defaultName", i);
+                        info.setAddr("defaultAddr", i);
+                        info.setTel("00000000", i);
+                        info.setX(-100, i);
+                        info.setY(-100, i);
+                        info.setIsCapital(false, i);
                         for (int j = 0; j < 20; j++) {
                             graph.delEdge(i, j);
                             graph.delEdge(j, i);
@@ -167,11 +159,19 @@ public class picturePanel extends JPanel {
                 paintComponent();
             }
         });
+        setPaintMode(DRAWMAP);
     }
 
     private void addEdge() {
         graph.setEdge(indexStart, indexEnd, edgeWeight);
         graph.setEdge(indexEnd, indexStart, edgeWeight);
+        setPaintMode(DRAWMAP);
+        paintComponent();
+    }
+
+    private void delEdge() {
+        graph.delEdge(indexStart, indexEnd);
+        graph.delEdge(indexEnd, indexStart);
         setPaintMode(DRAWMAP);
         paintComponent();
     }
@@ -190,6 +190,6 @@ public class picturePanel extends JPanel {
             gra.draw(line);
             j = i;
             i = graph.Distance[indexStart][i].pre;
-        }while(i != indexStart);
+        } while (i != indexStart);
     }
 }

@@ -22,6 +22,7 @@ public class GUI extends JFrame {
     private JButton saveMap;
     private JButton changeInformation;
     private JButton addEdge;
+    private JButton delEdge;
     private JButton shortestPath;
 
     private JTextField companyName;
@@ -45,12 +46,13 @@ public class GUI extends JFrame {
         this.start= 0;
         this.end = 0;
 
-        this.loadMap = new JButton("栽入地图");
+        this.loadMap = new JButton("载入地图");
         this.addNode = new JButton("添加节点");
         this.deleteNode = new JButton("删除节点");
         this.saveMap = new JButton("保存地图");
         this.changeInformation = new JButton("修改公司信息");
         this.addEdge = new JButton("添加通路");
+        this.delEdge = new JButton("删除通路");
         this.shortestPath = new JButton("最短路径");
 
         this.companyName = new JTextField("defaultName");
@@ -170,17 +172,40 @@ public class GUI extends JFrame {
                 catchStartAndEndIndex();
                 picturePanel.setStartAndEndIndex(start, end);
                 picturePanel.setEdgeWeight(Integer.parseInt(weight.getText()));
-                picturePanel.setPaintMode(3);
+                picturePanel.setPaintMode(picturePanel.ADDEDGE);
                 picturePanel.paintComponent();
             }
+        });
+        this.delEdge.addActionListener(new ActionListener() {
+
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                catchStartAndEndIndex();
+                picturePanel.setStartAndEndIndex(start, end);
+                picturePanel.setPaintMode(picturePanel.DELETEEDGE);
+                picturePanel.paintComponent();
+            }
+            
         });
         this.shortestPath.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 catchStartAndEndIndex();
                 picturePanel.setStartAndEndIndex(start, end);
-                picturePanel.setPaintMode(4);
+                picturePanel.setPaintMode(picturePanel.SHORTESTPATH);
                 picturePanel.paintComponent();
+            }
+        });
+        this.picturePanel.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent event) {
+                for (int i = 0; i < 20; i++) {
+                    if (event.getX() >= info.getX(i) - 30 && event.getX() <= info.getX(i) + 30
+                            && event.getY() >= info.getY(i) - 30 && event.getY() <= info.getY(i) + 30) {
+                        setTextFromInfoCatcherToTextFeild(i);
+                        break;
+                    }
+                }
             }
         });
         GridBagLayout gridbag = new GridBagLayout();
@@ -263,6 +288,17 @@ public class GUI extends JFrame {
         constraint.weighty = 0.01;
         constraint.fill = GridBagConstraints.HORIZONTAL;
         constraint.anchor = GridBagConstraints.PAGE_START;
+        container.add(delEdge, constraint);
+        
+        constraint = new GridBagConstraints();
+        constraint.gridy = 1;
+        constraint.gridx = 4;
+        constraint.gridwidth = 2;
+        constraint.gridheight = 1;
+        constraint.weightx = 0.01;
+        constraint.weighty = 0.01;
+        constraint.fill = GridBagConstraints.HORIZONTAL;
+        constraint.anchor = GridBagConstraints.PAGE_START;
         container.add(shortestPath, constraint);
 
         constraint = new GridBagConstraints();
@@ -302,11 +338,18 @@ public class GUI extends JFrame {
 
     }
 
+    private void setTextFromInfoCatcherToTextFeild(int num) {
+        this.companyName.setText(this.info.getName(num));
+        this.companyAddress.setText(this.info.getAddr(num));
+        this.companyTel.setText(this.info.getTel(num));
+        this.companyIsCapital.setText(""+this.info.getIsCapital(num));
+    }
+    
     private void catchTextFromTextFieldToInfoCatcher(int num) {
-        this.info.name[num] = this.companyName.getText();
-        this.info.addr[num] = this.companyAddress.getText();
-        this.info.tel[num] = this.companyTel.getText();
-        this.info.isCapital[num] = Boolean.parseBoolean(this.companyIsCapital.getText());
+        this.info.setName(this.companyName.getText(), num);
+        this.info.setAddr(this.companyAddress.getText(), num);;
+        this.info.setTel(this.companyTel.getText(), num);;
+        this.info.setIsCapital(Boolean.parseBoolean(this.companyIsCapital.getText()), num);;
     }
     
     private void catchStartAndEndIndex() {

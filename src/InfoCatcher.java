@@ -1,13 +1,13 @@
 import java.io.*;
 
 public class InfoCatcher {
-    public int[] num;
-    public String[] name;
-    public String[] addr;
-    public String[] tel;
-    public int[] x;
-    public int[] y;
-    public boolean[] isCapital;
+    private int[] num;
+    private String[] name;
+    private String[] addr;
+    private String[] tel;
+    private int[] x;
+    private int[] y;
+    private boolean[] isCapital;
 
     public InfoCatcher() {
         this.num = new int[20];
