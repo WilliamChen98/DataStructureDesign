@@ -1,8 +1,7 @@
-
 public class linkNode {
-    public int vertex;
-    public int weight;
-    public linkNode next = null;
+    private int vertex;
+    private int weight;
+    private linkNode next = null;
 
     public linkNode(int verval, int weival, linkNode nextval) {
         this.vertex = verval;
@@ -14,12 +13,27 @@ public class linkNode {
         this.next = nextval;
     }
 
-    public void setValue(int verval, int weival) {
+    public void setVertex(int verval) {
         this.vertex = verval;
+    }
+
+    public void setWeight(int weival) {
         this.weight = weival;
     }
 
     public void setNext(linkNode nextval) {
         this.next = nextval;
+    }
+
+    public int getVertex() {
+        return this.vertex;
+    }
+
+    public int getWeight() {
+        return this.weight;
+    }
+
+    public linkNode getNext() {
+        return this.next;
     }
 }

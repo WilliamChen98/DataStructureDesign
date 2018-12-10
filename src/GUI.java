@@ -44,7 +44,7 @@ public class GUI extends JFrame {
         this.info.readLineFromFile("src/Info.txt");
         this.graph.readMatrixFromFile("src/Matrix.txt");
         this.container = this.getContentPane();
-        this.start= 0;
+        this.start = 0;
         this.end = 0;
 
         this.loadMap = new JButton("‘ÿ»ÎµÿÕº");
@@ -116,8 +116,8 @@ public class GUI extends JFrame {
         hGroupForEdge.addGroup(layout.createParallelGroup().addComponent(startCompanyLabel)
                 .addComponent(endCompanyLabel).addComponent(weightLabel));
         hGroupForEdge.addGap(5);
-        hGroupForEdge.addGroup(
-                layout.createParallelGroup().addComponent(edgeTitle).addComponent(startCompany).addComponent(endCompany).addComponent(weight));
+        hGroupForEdge.addGroup(layout.createParallelGroup().addComponent(edgeTitle).addComponent(startCompany)
+                .addComponent(endCompany).addComponent(weight));
         hGroupForEdge.addGap(5);
         layout.setHorizontalGroup(hGroupForEdge);
         GroupLayout.SequentialGroup vGroupForEdge = layout.createSequentialGroup();
@@ -193,7 +193,7 @@ public class GUI extends JFrame {
                 picturePanel.setPaintMode(picturePanel.DELETEEDGE);
                 picturePanel.paintComponent();
             }
-            
+
         });
         this.shortestPath.addActionListener(new ActionListener() {
             @Override
@@ -304,7 +304,7 @@ public class GUI extends JFrame {
         constraint.fill = GridBagConstraints.HORIZONTAL;
         constraint.anchor = GridBagConstraints.PAGE_START;
         container.add(delEdge, constraint);
-        
+
         constraint = new GridBagConstraints();
         constraint.gridy = 1;
         constraint.gridx = 4;
@@ -315,7 +315,7 @@ public class GUI extends JFrame {
         constraint.fill = GridBagConstraints.HORIZONTAL;
         constraint.anchor = GridBagConstraints.PAGE_START;
         container.add(shortestPath, constraint);
-        
+
         constraint = new GridBagConstraints();
         constraint.gridy = 1;
         constraint.gridx = 6;
@@ -347,7 +347,7 @@ public class GUI extends JFrame {
         constraint.fill = GridBagConstraints.HORIZONTAL;
         constraint.anchor = GridBagConstraints.PAGE_START;
         container.add(this.informationPanel, constraint);
-        
+
         constraint = new GridBagConstraints();
         constraint.gridy = 3;
         constraint.gridx = 8;
@@ -368,25 +368,28 @@ public class GUI extends JFrame {
         this.companyName.setText(this.info.getName(num));
         this.companyAddress.setText(this.info.getAddr(num));
         this.companyTel.setText(this.info.getTel(num));
-        this.companyIsCapital.setText(""+this.info.getIsCapital(num));
+        this.companyIsCapital.setText("" + this.info.getIsCapital(num));
     }
-    
+
     private void catchTextFromTextFieldToInfoCatcher(int num) {
         this.info.setName(this.companyName.getText(), num);
-        this.info.setAddr(this.companyAddress.getText(), num);;
-        this.info.setTel(this.companyTel.getText(), num);;
-        this.info.setIsCapital(Boolean.parseBoolean(this.companyIsCapital.getText()), num);;
+        this.info.setAddr(this.companyAddress.getText(), num);
+        ;
+        this.info.setTel(this.companyTel.getText(), num);
+        ;
+        this.info.setIsCapital(Boolean.parseBoolean(this.companyIsCapital.getText()), num);
+        ;
     }
-    
+
     private void catchStartAndEndIndex() {
-        for(int i = 0;i < 20;i++) {
-            if(this.startCompany.getText().equals(info.getName(i))) {
+        for (int i = 0; i < 20; i++) {
+            if (this.startCompany.getText().equals(info.getName(i))) {
                 start = i;
             }
-            if(this.endCompany.getText().equals(info.getName(i))) {
+            if (this.endCompany.getText().equals(info.getName(i))) {
                 end = i;
             }
         }
     }
-    
+
 }

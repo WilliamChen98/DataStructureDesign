@@ -61,7 +61,7 @@ public class picturePanel extends JPanel {
         indexStart = start;
         indexEnd = end;
     }
-    
+
     public void setIndex(int index) {
         this.index = index;
     }
@@ -107,12 +107,12 @@ public class picturePanel extends JPanel {
         }
         for (int i = 0; i < 20; i++) {
             for (Edge edge = graph.FirstEdge(i); graph.isEdge(edge); edge = graph.NextEdge(edge)) {
-                Point2D from = new Point2D.Double(info.getX(edge.from), info.getY(edge.from));
-                Point2D to = new Point2D.Double(info.getX(edge.to), info.getY(edge.to));
+                Point2D from = new Point2D.Double(info.getX(edge.getFrom()), info.getY(edge.getFrom()));
+                Point2D to = new Point2D.Double(info.getX(edge.getTo()), info.getY(edge.getTo()));
                 if (from.getX() >= 0 && to.getX() >= 0) {
                     g2.draw(new Line2D.Double(from, to));
-                    g2.drawString("" + edge.weight, (info.getX(edge.from) + info.getX(edge.to)) / 2 - 15,
-                            (info.getY(edge.from) + info.getY(edge.to)) / 2 - 15);
+                    g2.drawString("" + edge.getWeight(), (info.getX(edge.getFrom()) + info.getX(edge.getTo())) / 2 - 15,
+                            (info.getY(edge.getFrom()) + info.getY(edge.getTo())) / 2 - 15);
                 }
             }
         }
@@ -189,7 +189,7 @@ public class picturePanel extends JPanel {
         paintComponent();
         Graphics2D gra = (Graphics2D) g;
         graph.Floyd(graph);
-        int i = graph.Distance[indexStart][indexEnd].pre;
+        int i = graph.getDistance(indexStart, indexEnd).getPre();
         int j = indexEnd;
         do {
             Point2D from = new Point2D.Double(info.getX(i), info.getY(i));
@@ -199,16 +199,19 @@ public class picturePanel extends JPanel {
             gra.setStroke(new BasicStroke(5));
             gra.draw(line);
             j = i;
-            i = graph.Distance[indexStart][i].pre;
+            i = graph.getDistance(indexStart, i).getPre();
         } while (j != indexStart);
     }
-    
+
     private void minimumSpanningTree(Graphics g) {
-        Graphics2D gra = (Graphics2D)g;
+        setPaintMode(DRAWMAP);
+        paintComponent();
+        Graphics2D gra = (Graphics2D) g;
         Edge[] mst = new Edge[19];
         mst = graph.Prim(0);
-        for(int i = 0;graph.isEdge(mst[i]);i++) {
-            Line2D line = new Line2D.Double(info.getX(mst[i].from), info.getY(mst[i].from), info.getX(mst[i].to), info.getY(mst[i].to));
+        for (int i = 0; graph.isEdge(mst[i]); i++) {
+            Line2D line = new Line2D.Double(info.getX(mst[i].getFrom()), info.getY(mst[i].getFrom()),
+                    info.getX(mst[i].getTo()), info.getY(mst[i].getTo()));
             gra.setColor(Color.YELLOW);
             gra.setStroke(new BasicStroke(5));
             gra.draw(line);

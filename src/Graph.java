@@ -1,11 +1,11 @@
 import java.io.*;
 
 public class Graph {
-    public int numVertex;
-    public int numEdge;
-    public int[] Mark;
-    public int[] Indegree;
-    public Dist[][] Distance;
+    private int numVertex;
+    private int numEdge;
+    private int[] Mark;
+    private int[] Indegree;
+    private Dist[][] Distance;
     public final int INFINITY = 100000000;
     public final int UNVISITED = 0;
     public final int VISITED = 1;
@@ -23,38 +23,53 @@ public class Graph {
         this.graphList = new LinkList[numVertex];
     }
 
-    public int VerticesNum() {
+    public int getMark(int num) {
+        return this.Mark[num];
+    }
+
+    public int getIndegree(int num) {
+        return this.Indegree[num];
+    }
+
+    public Dist getDistance(int i, int j) {
+        return this.Distance[i][j];
+    }
+
+    public int getVerticesNum() {
         return numVertex;
     }
 
-    public int EdgeNum() {
+    public int getEdgeNum() {
         return numEdge;
     }
 
     public Edge FirstEdge(int oneVertex) {
         Edge myEdge = new Edge();
-        myEdge.from = oneVertex;
+        myEdge.setFrom(oneVertex);
         if (this.graphList[oneVertex] == null) {
             this.graphList[oneVertex] = new LinkList();
         }
-        linkNode temp = this.graphList[oneVertex].head;
-        if (temp.next != null) {
-            myEdge.to = temp.next.vertex;
-            myEdge.weight = temp.next.weight;
+        linkNode temp = this.graphList[oneVertex].getHead();
+        if (temp.getNext() != null) {
+            myEdge.setTo(temp.getNext().getVertex());
+            myEdge.setWeight(temp.getNext().getWeight());
         }
         return myEdge;
     }
 
     public Edge NextEdge(Edge preEdge) {
         Edge myEdge = new Edge();
-        myEdge.from = preEdge.from;
-        linkNode temp = this.graphList[preEdge.from].head;
-        while (temp.next != null && temp.next.vertex <= preEdge.to) {
-            temp = temp.next;
+        myEdge.setFrom(preEdge.getFrom());
+        ;
+        linkNode temp = this.graphList[preEdge.getFrom()].getHead();
+        while (temp.getNext() != null && temp.getNext().getVertex() <= preEdge.getTo()) {
+            temp = temp.getNext();
         }
-        if (temp.next != null) {
-            myEdge.to = temp.next.vertex;
-            myEdge.weight = temp.next.weight;
+        if (temp.getNext() != null) {
+            myEdge.setTo(temp.getNext().getVertex());
+            ;
+            myEdge.setWeight(temp.getNext().getWeight());
+            ;
             return myEdge;
         } else {
             return null;
@@ -69,29 +84,29 @@ public class Graph {
         if (this.graphList[fromVertex] == null) {
             graphList[fromVertex] = new LinkList();
         }
-        linkNode temp = this.graphList[fromVertex].head;
+        linkNode temp = this.graphList[fromVertex].getHead();
 
-        while (temp.next != null && temp.next.vertex < toVertex) {
-            temp = temp.next;
+        while (temp.getNext() != null && temp.getNext().getVertex() < toVertex) {
+            temp = temp.getNext();
         }
-        if (temp.next == null) {
-            temp.next = new linkNode(null);
-            temp.next.vertex = toVertex;
-            temp.next.weight = weight;
+        if (temp.getNext() == null) {
+            temp.setNext(new linkNode(null));
+            temp.getNext().setVertex(toVertex);
+            temp.getNext().setWeight(weight);
             this.numEdge++;
             this.Indegree[toVertex]++;
             return;
         }
-        if (temp.next.vertex == toVertex) {
-            temp.next.weight = weight;
+        if (temp.getNext().getVertex() == toVertex) {
+            temp.getNext().setWeight(weight);
             return;
         }
-        if (temp.next.vertex > toVertex) {
-            linkNode other = temp.next;
-            temp.next = new linkNode(null);
-            temp.next.vertex = toVertex;
-            temp.next.weight = weight;
-            temp.next.next = other;
+        if (temp.getNext().getVertex() > toVertex) {
+            linkNode other = temp.getNext();
+            temp.setNext(new linkNode(null));;
+            temp.getNext().setVertex(toVertex);
+            temp.getNext().setWeight(weight);
+            temp.getNext().setNext(other);
             this.numEdge++;
             this.Indegree[toVertex]++;
             return;
@@ -99,25 +114,25 @@ public class Graph {
     }
 
     public void delEdge(int fromVertex, int toVertex) {
-        linkNode temp = this.graphList[fromVertex].head;
-        while (temp.next != null && temp.next.vertex != toVertex) {
-            temp = temp.next;
+        linkNode temp = this.graphList[fromVertex].getHead();
+        while (temp.getNext() != null && temp.getNext().getVertex() != toVertex) {
+            temp = temp.getNext();
         }
-        if (temp.next == null) {
+        if (temp.getNext() == null) {
             return;
         }
-        if (temp.next.vertex > toVertex) {
+        if (temp.getNext().getVertex() > toVertex) {
             return;
         }
-        if(temp.vertex == toVertex) {
+        if (temp.getVertex() == toVertex) {
             temp = null;
             numEdge--;
             Indegree[toVertex]--;
             return;
         }
-        if (temp.next.vertex == toVertex) {
-            linkNode other = temp.next.next;
-            temp.next = other;
+        if (temp.getNext().getVertex() == toVertex) {
+            linkNode other = temp.getNext().getNext();
+            temp.setNext(other);
             numEdge--;
             Indegree[toVertex]--;
             return;
@@ -127,7 +142,7 @@ public class Graph {
     public boolean isEdge(Edge oneEdge) {
         if (oneEdge == null) {
             return false;
-        } else if (oneEdge.weight > 0 && oneEdge.weight < INFINITY && oneEdge.to >= 0) {
+        } else if (oneEdge.getWeight() > 0 && oneEdge.getWeight() < INFINITY && oneEdge.getTo() >= 0) {
             return true;
         } else {
             return false;
@@ -135,48 +150,48 @@ public class Graph {
     }
 
     public int FromVertex(Edge oneEdge) {
-        return oneEdge.from;
+        return oneEdge.getFrom();
     }
 
     public int ToVertex(Edge oneEdge) {
-        return oneEdge.to;
+        return oneEdge.getTo();
     }
 
     public int Weight(Edge oneEdge) {
-        return oneEdge.weight;
+        return oneEdge.getWeight();
     }
 
     public void Floyd(Graph G) {
         int i, j, v;
-        Distance = new Dist[G.VerticesNum()][G.VerticesNum()];
-        for (i = 0; i < G.VerticesNum(); i++) {
-            for (j = 0; j < G.VerticesNum(); j++) {
+        Distance = new Dist[G.getVerticesNum()][G.getVerticesNum()];
+        for (i = 0; i < G.getVerticesNum(); i++) {
+            for (j = 0; j < G.getVerticesNum(); j++) {
                 Distance[i][j] = new Dist();
             }
         }
-        for (i = 0; i < G.VerticesNum(); i++) {
-            for (j = 0; j < G.VerticesNum(); j++) {
+        for (i = 0; i < G.getVerticesNum(); i++) {
+            for (j = 0; j < G.getVerticesNum(); j++) {
                 if (i == j) {
-                    Distance[i][j].length = 0;
-                    Distance[i][j].pre = i;
+                    Distance[i][j].setLength(0);
+                    Distance[i][j].setPre(i);
                 } else {
-                    Distance[i][j].length = INFINITY;
-                    Distance[i][j].pre = -1;
+                    Distance[i][j].setLength(INFINITY);
+                    Distance[i][j].setPre(-1);
                 }
             }
         }
-        for (v = 0; v < G.VerticesNum(); v++) {
+        for (v = 0; v < G.getVerticesNum(); v++) {
             for (Edge e = G.FirstEdge(v); G.isEdge(e); e = G.NextEdge(e)) {
-                Distance[v][G.ToVertex(e)].length = G.Weight(e);
-                Distance[v][G.ToVertex(e)].pre = v;
+                Distance[v][G.ToVertex(e)].setLength(G.Weight(e));
+                Distance[v][G.ToVertex(e)].setPre(v);
             }
         }
-        for (v = 0; v < G.VerticesNum(); v++) {
-            for (i = 0; i < G.VerticesNum(); i++) {
-                for (j = 0; j < G.VerticesNum(); j++) {
-                    if (Distance[i][j].length > Distance[i][v].length + Distance[v][j].length) {
-                        Distance[i][j].length = Distance[i][v].length + Distance[v][j].length;
-                        Distance[i][j].pre = Distance[v][j].pre;
+        for (v = 0; v < G.getVerticesNum(); v++) {
+            for (i = 0; i < G.getVerticesNum(); i++) {
+                for (j = 0; j < G.getVerticesNum(); j++) {
+                    if (Distance[i][j].getLength() > Distance[i][v].getLength() + Distance[v][j].getLength()) {
+                        Distance[i][j].setLength(Distance[i][v].getLength() + Distance[v][j].getLength());
+                        Distance[i][j].setPre(Distance[v][j].getPre());
                     }
                 }
             }
@@ -185,14 +200,14 @@ public class Graph {
 
     public int minVertex(Dist[] D) {
         int v = 0;
-        for (int i = 0; i < this.VerticesNum(); i++) {
+        for (int i = 0; i < this.getVerticesNum(); i++) {
             if (this.Mark[i] == UNVISITED) {
                 v = i;
                 break;
             }
         }
-        for (int i = 0; i < this.VerticesNum(); i++) {
-            if (this.Mark[i] == UNVISITED && D[i].length < D[v].length) {
+        for (int i = 0; i < this.getVerticesNum(); i++) {
+            if (this.Mark[i] == UNVISITED && D[i].getLength() < D[v].getLength()) {
                 v = i;
             }
         }
@@ -204,34 +219,35 @@ public class Graph {
         Edge[] MST = new Edge[this.numVertex];
         Dist[] D;
         D = new Dist[this.numVertex];
-        for(int i = 0;i < this.numVertex;i++) {
+        for (int i = 0; i < this.numVertex; i++) {
             D[i] = new Dist();
         }
-        for(int i = 0;i < this.numVertex;i++) {
+        for (int i = 0; i < this.numVertex; i++) {
             MST[i] = new Edge();
         }
         for (int i = 0; i < this.numVertex; i++) {
             this.Mark[i] = UNVISITED;
-            D[i].index = i;
-            D[i].length = INFINITY;
-            D[i].pre = s;
+            D[i].setIndex(i);
+            ;
+            D[i].setLength(INFINITY);
+            D[i].setPre(s);
         }
-        D[s].length = 0;
+        D[s].setLength(0);
         this.Mark[s] = VISITED;
         int v = s;
         for (int i = 0; i < this.numVertex; i++) {
-            if (D[v].length == INFINITY) {
+            if (D[v].getLength() == INFINITY) {
                 return null;
             }
             for (Edge e = this.FirstEdge(v); this.isEdge(e); e = this.NextEdge(e)) {
-                if (this.Mark[this.ToVertex(e)] != VISITED && D[this.ToVertex(e)].length > e.weight) {
-                    D[this.ToVertex(e)].length = e.weight;
-                    D[this.ToVertex(e)].pre = v;
+                if (this.Mark[this.ToVertex(e)] != VISITED && D[this.ToVertex(e)].getLength() > e.getWeight()) {
+                    D[this.ToVertex(e)].setLength(e.getWeight());
+                    D[this.ToVertex(e)].setPre(v);
                 }
             }
             v = this.minVertex(D);
             this.Mark[v] = VISITED;
-            Edge tmpEdge = new Edge(D[v].pre, D[v].index, D[v].length);
+            Edge tmpEdge = new Edge(D[v].getPre(), D[v].getIndex(), D[v].getLength());
             MST[MSTtag] = tmpEdge;
             MSTtag++;
         }
@@ -279,7 +295,7 @@ public class Graph {
                     this.numEdge++;
                 }
             }
-            if(cnt > -20) {
+            if (cnt > -20) {
                 this.numVertex++;
             }
             cnt = 0;
@@ -304,8 +320,8 @@ public class Graph {
         }
         for (int i = 0; i < 20; i++) {
             for (Edge e = FirstEdge(i); isEdge(e); e = NextEdge(e)) {
-                tmpMatrix[e.from][e.to] = e.weight;
-                tmpMatrix[e.to][e.from] = e.weight;
+                tmpMatrix[e.getFrom()][e.getTo()] = e.getWeight();
+                tmpMatrix[e.getTo()][e.getFrom()] = e.getWeight();
             }
         }
         try {
