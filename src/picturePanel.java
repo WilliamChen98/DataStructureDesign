@@ -22,6 +22,7 @@ public class picturePanel extends JPanel {
     public final int ADDEDGE = 3;
     public final int DELETEEDGE = 4;
     public final int SHORTESTPATH = 5;
+    public final int MST = 6;
 
     public picturePanel(Graph g, InfoCatcher i) {
         super();
@@ -60,6 +61,10 @@ public class picturePanel extends JPanel {
         indexStart = start;
         indexEnd = end;
     }
+    
+    public void setIndex(int index) {
+        this.index = index;
+    }
 
     public void paintComponent() {
         Graphics g = this.getGraphics();
@@ -82,6 +87,9 @@ public class picturePanel extends JPanel {
             break;
         case SHORTESTPATH:
             this.shortestPath(g);
+            break;
+        case MST:
+            this.minimumSpanningTree(g);
             break;
         }
 
@@ -177,6 +185,8 @@ public class picturePanel extends JPanel {
     }
 
     private void shortestPath(Graphics g) {
+        setPaintMode(DRAWMAP);
+        paintComponent();
         Graphics2D gra = (Graphics2D) g;
         graph.Floyd(graph);
         int i = graph.Distance[indexStart][indexEnd].pre;
@@ -190,6 +200,18 @@ public class picturePanel extends JPanel {
             gra.draw(line);
             j = i;
             i = graph.Distance[indexStart][i].pre;
-        } while (i != indexStart);
+        } while (j != indexStart);
+    }
+    
+    private void minimumSpanningTree(Graphics g) {
+        Graphics2D gra = (Graphics2D)g;
+        Edge[] mst = new Edge[19];
+        mst = graph.Prim(0);
+        for(int i = 0;graph.isEdge(mst[i]);i++) {
+            Line2D line = new Line2D.Double(info.getX(mst[i].from), info.getY(mst[i].from), info.getX(mst[i].to), info.getY(mst[i].to));
+            gra.setColor(Color.YELLOW);
+            gra.setStroke(new BasicStroke(5));
+            gra.draw(line);
+        }
     }
 }

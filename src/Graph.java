@@ -100,13 +100,19 @@ public class Graph {
 
     public void delEdge(int fromVertex, int toVertex) {
         linkNode temp = this.graphList[fromVertex].head;
-        while (temp.next != null && temp.next.vertex > toVertex) {
+        while (temp.next != null && temp.next.vertex != toVertex) {
             temp = temp.next;
         }
         if (temp.next == null) {
             return;
         }
         if (temp.next.vertex > toVertex) {
+            return;
+        }
+        if(temp.vertex == toVertex) {
+            temp = null;
+            numEdge--;
+            Indegree[toVertex]--;
             return;
         }
         if (temp.next.vertex == toVertex) {
@@ -178,7 +184,7 @@ public class Graph {
     }
 
     public int minVertex(Dist[] D) {
-        int v = -1;
+        int v = 0;
         for (int i = 0; i < this.VerticesNum(); i++) {
             if (this.Mark[i] == UNVISITED) {
                 v = i;
@@ -193,18 +199,18 @@ public class Graph {
         return v;
     }
 
-    public Edge[] Prim(int s,int VertexNum) {
+    public Edge[] Prim(int s) {
         int MSTtag = 0;
-        Edge[] MST = new Edge[this.numVertex - 1];
+        Edge[] MST = new Edge[this.numVertex];
         Dist[] D;
         D = new Dist[this.numVertex];
         for(int i = 0;i < this.numVertex;i++) {
             D[i] = new Dist();
         }
-        for(int i = 0;i < this.numVertex - 1;i++) {
+        for(int i = 0;i < this.numVertex;i++) {
             MST[i] = new Edge();
         }
-        for (int i = 0; i < this.numVertex - 1; i++) {
+        for (int i = 0; i < this.numVertex; i++) {
             this.Mark[i] = UNVISITED;
             D[i].index = i;
             D[i].length = INFINITY;
@@ -213,7 +219,7 @@ public class Graph {
         D[s].length = 0;
         this.Mark[s] = VISITED;
         int v = s;
-        for (int i = 0; i < this.numVertex - 1; i++) {
+        for (int i = 0; i < this.numVertex; i++) {
             if (D[v].length == INFINITY) {
                 return null;
             }
@@ -262,12 +268,21 @@ public class Graph {
                 }
             }
         }
+        this.numVertex = 0;
+        this.numEdge = 0;
+        int cnt = 0;
         for (int i = 0; i < 20; i++) {
             for (int j = 0; j < 20; j++) {
+                cnt += tmpMatrix[i][j];
                 if (tmpMatrix[i][j] != -1) {
                     this.setEdge(i, j, tmpMatrix[i][j]);
+                    this.numEdge++;
                 }
             }
+            if(cnt > -20) {
+                this.numVertex++;
+            }
+            cnt = 0;
         }
     }
 

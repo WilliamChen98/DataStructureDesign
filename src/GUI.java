@@ -24,6 +24,7 @@ public class GUI extends JFrame {
     private JButton addEdge;
     private JButton delEdge;
     private JButton shortestPath;
+    private JButton minSpanTree;
 
     private JTextField companyName;
     private JTextField companyAddress;
@@ -50,10 +51,11 @@ public class GUI extends JFrame {
         this.addNode = new JButton("添加节点");
         this.deleteNode = new JButton("删除节点");
         this.saveMap = new JButton("保存地图");
-        this.changeInformation = new JButton("修改公司信息");
+        this.changeInformation = new JButton("修改信息");
         this.addEdge = new JButton("添加通路");
         this.delEdge = new JButton("删除通路");
         this.shortestPath = new JButton("最短路径");
+        this.minSpanTree = new JButton("最小生成树");
 
         this.companyName = new JTextField("defaultName");
         this.companyAddress = new JTextField("defaultAddr");
@@ -100,6 +102,8 @@ public class GUI extends JFrame {
         this.startCompany = new JTextField("defaultName1");
         this.endCompany = new JTextField("defaultName2");
         this.weight = new JTextField("-1");
+        JLabel edgeTitle = new JLabel("边相关设置");
+        edgeTitle.setFont(new Font("楷体", Font.BOLD, 28));
         JLabel startCompanyLabel = new JLabel("起点公司：");
         JLabel endCompanyLabel = new JLabel("终点公司：");
         JLabel weightLabel = new JLabel("公司距离：");
@@ -113,10 +117,12 @@ public class GUI extends JFrame {
                 .addComponent(endCompanyLabel).addComponent(weightLabel));
         hGroupForEdge.addGap(5);
         hGroupForEdge.addGroup(
-                layout.createParallelGroup().addComponent(startCompany).addComponent(endCompany).addComponent(weight));
+                layout.createParallelGroup().addComponent(edgeTitle).addComponent(startCompany).addComponent(endCompany).addComponent(weight));
         hGroupForEdge.addGap(5);
         layout.setHorizontalGroup(hGroupForEdge);
         GroupLayout.SequentialGroup vGroupForEdge = layout.createSequentialGroup();
+        vGroupForEdge.addGap(10);
+        vGroupForEdge.addGroup(layout.createParallelGroup().addComponent(edgeTitle));
         vGroupForEdge.addGap(10);
         vGroupForEdge.addGroup(layout.createParallelGroup().addComponent(startCompanyLabel).addComponent(startCompany));
         vGroupForEdge.addGroup(layout.createParallelGroup().addComponent(endCompanyLabel).addComponent(endCompany));
@@ -139,6 +145,7 @@ public class GUI extends JFrame {
             public void actionPerformed(ActionEvent e) {
                 picturePanel.setPaintMode(picturePanel.DRAWPOINT);
                 picturePanel.paintComponent();
+                picturePanel.setPaintMode(picturePanel.DRAWMAP);
             }
         });
         this.deleteNode.addActionListener(new ActionListener() {
@@ -146,6 +153,7 @@ public class GUI extends JFrame {
             public void actionPerformed(ActionEvent e) {
                 picturePanel.setPaintMode(picturePanel.DELETEPOINT);
                 picturePanel.paintComponent();
+                picturePanel.setPaintMode(picturePanel.DRAWMAP);
             }
         });
         this.saveMap.addActionListener(new ActionListener() {
@@ -193,6 +201,13 @@ public class GUI extends JFrame {
                 catchStartAndEndIndex();
                 picturePanel.setStartAndEndIndex(start, end);
                 picturePanel.setPaintMode(picturePanel.SHORTESTPATH);
+                picturePanel.paintComponent();
+            }
+        });
+        this.minSpanTree.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                picturePanel.setPaintMode(picturePanel.MST);
                 picturePanel.paintComponent();
             }
         });
@@ -300,6 +315,17 @@ public class GUI extends JFrame {
         constraint.fill = GridBagConstraints.HORIZONTAL;
         constraint.anchor = GridBagConstraints.PAGE_START;
         container.add(shortestPath, constraint);
+        
+        constraint = new GridBagConstraints();
+        constraint.gridy = 1;
+        constraint.gridx = 6;
+        constraint.gridwidth = 2;
+        constraint.gridheight = 1;
+        constraint.weightx = 0.01;
+        constraint.weighty = 0.01;
+        constraint.fill = GridBagConstraints.HORIZONTAL;
+        constraint.anchor = GridBagConstraints.PAGE_START;
+        container.add(minSpanTree, constraint);
 
         constraint = new GridBagConstraints();
         constraint.gridy = 2;
@@ -312,17 +338,6 @@ public class GUI extends JFrame {
         container.add(picturePanel, constraint);
 
         constraint = new GridBagConstraints();
-        constraint.gridy = 3;
-        constraint.gridx = 8;
-        constraint.gridwidth = 2;
-        constraint.gridheight = 3;
-        constraint.weightx = 0.01;
-        constraint.weighty = 1;
-        constraint.fill = GridBagConstraints.HORIZONTAL;
-        constraint.anchor = GridBagConstraints.CENTER;
-        container.add(this.edgePanel, constraint);
-
-        constraint = new GridBagConstraints();
         constraint.gridy = 2;
         constraint.gridx = 8;
         constraint.gridwidth = 2;
@@ -332,6 +347,17 @@ public class GUI extends JFrame {
         constraint.fill = GridBagConstraints.HORIZONTAL;
         constraint.anchor = GridBagConstraints.PAGE_START;
         container.add(this.informationPanel, constraint);
+        
+        constraint = new GridBagConstraints();
+        constraint.gridy = 3;
+        constraint.gridx = 8;
+        constraint.gridwidth = 2;
+        constraint.gridheight = 3;
+        constraint.weightx = 0.01;
+        constraint.weighty = 1;
+        constraint.fill = GridBagConstraints.HORIZONTAL;
+        constraint.anchor = GridBagConstraints.CENTER;
+        container.add(this.edgePanel, constraint);
 
         this.pack();
         this.setVisible(true);
