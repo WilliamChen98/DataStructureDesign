@@ -6,10 +6,9 @@ public class Graph {
     private int[] Mark;
     private int[] Indegree;
     private Dist[][] Distance;
-    public final int INFINITY = 100000000;
-    public final int UNVISITED = 0;
-    public final int VISITED = 1;
     private LinkList[] graphList;
+    public static final int UNVISITED = 0;
+    public static final int VISITED = 1;
 
     public Graph(int numVert) {
         this.numVertex = numVert;
@@ -43,7 +42,7 @@ public class Graph {
         return numEdge;
     }
 
-    public Edge FirstEdge(int oneVertex) {
+    public Edge getFirstEdge(int oneVertex) {
         Edge myEdge = new Edge();
         myEdge.setFrom(oneVertex);
         if (this.graphList[oneVertex] == null) {
@@ -57,7 +56,7 @@ public class Graph {
         return myEdge;
     }
 
-    public Edge NextEdge(Edge preEdge) {
+    public Edge getNextEdge(Edge preEdge) {
         Edge myEdge = new Edge();
         myEdge.setFrom(preEdge.getFrom());
         ;
@@ -77,7 +76,7 @@ public class Graph {
 
     }
 
-    public void setEdge(int fromVertex, int toVertex, int weight) {
+    public void addEdge(int fromVertex, int toVertex, int weight) {
         if (weight <= 0) {
             return;
         }
@@ -103,7 +102,8 @@ public class Graph {
         }
         if (temp.getNext().getVertex() > toVertex) {
             linkNode other = temp.getNext();
-            temp.setNext(new linkNode(null));;
+            temp.setNext(new linkNode(null));
+            ;
             temp.getNext().setVertex(toVertex);
             temp.getNext().setWeight(weight);
             temp.getNext().setNext(other);
@@ -142,23 +142,11 @@ public class Graph {
     public boolean isEdge(Edge oneEdge) {
         if (oneEdge == null) {
             return false;
-        } else if (oneEdge.getWeight() > 0 && oneEdge.getWeight() < INFINITY && oneEdge.getTo() >= 0) {
+        } else if (oneEdge.getWeight() > 0 && oneEdge.getWeight() < Edge.INFINITY && oneEdge.getTo() >= 0) {
             return true;
         } else {
             return false;
         }
-    }
-
-    public int FromVertex(Edge oneEdge) {
-        return oneEdge.getFrom();
-    }
-
-    public int ToVertex(Edge oneEdge) {
-        return oneEdge.getTo();
-    }
-
-    public int Weight(Edge oneEdge) {
-        return oneEdge.getWeight();
     }
 
     public void Floyd(Graph G) {
@@ -175,15 +163,15 @@ public class Graph {
                     Distance[i][j].setLength(0);
                     Distance[i][j].setPre(i);
                 } else {
-                    Distance[i][j].setLength(INFINITY);
+                    Distance[i][j].setLength(Edge.INFINITY);
                     Distance[i][j].setPre(-1);
                 }
             }
         }
         for (v = 0; v < G.getVerticesNum(); v++) {
-            for (Edge e = G.FirstEdge(v); G.isEdge(e); e = G.NextEdge(e)) {
-                Distance[v][G.ToVertex(e)].setLength(G.Weight(e));
-                Distance[v][G.ToVertex(e)].setPre(v);
+            for (Edge e = G.getFirstEdge(v); this.isEdge(e); e = G.getNextEdge(e)) {
+                Distance[v][e.getTo()].setLength(e.getWeight());
+                Distance[v][e.getTo()].setPre(v);
             }
         }
         for (v = 0; v < G.getVerticesNum(); v++) {
@@ -229,20 +217,20 @@ public class Graph {
             this.Mark[i] = UNVISITED;
             D[i].setIndex(i);
             ;
-            D[i].setLength(INFINITY);
+            D[i].setLength(Edge.INFINITY);
             D[i].setPre(s);
         }
         D[s].setLength(0);
         this.Mark[s] = VISITED;
         int v = s;
         for (int i = 0; i < this.numVertex; i++) {
-            if (D[v].getLength() == INFINITY) {
+            if (D[v].getLength() == Edge.INFINITY) {
                 return null;
             }
-            for (Edge e = this.FirstEdge(v); this.isEdge(e); e = this.NextEdge(e)) {
-                if (this.Mark[this.ToVertex(e)] != VISITED && D[this.ToVertex(e)].getLength() > e.getWeight()) {
-                    D[this.ToVertex(e)].setLength(e.getWeight());
-                    D[this.ToVertex(e)].setPre(v);
+            for (Edge e = this.getFirstEdge(v); this.isEdge(e); e = this.getNextEdge(e)) {
+                if (this.Mark[e.getTo()] != VISITED && D[e.getTo()].getLength() > e.getWeight()) {
+                    D[e.getTo()].setLength(e.getWeight());
+                    D[e.getTo()].setPre(v);
                 }
             }
             v = this.minVertex(D);
@@ -291,7 +279,7 @@ public class Graph {
             for (int j = 0; j < 20; j++) {
                 cnt += tmpMatrix[i][j];
                 if (tmpMatrix[i][j] != -1) {
-                    this.setEdge(i, j, tmpMatrix[i][j]);
+                    this.addEdge(i, j, tmpMatrix[i][j]);
                     this.numEdge++;
                 }
             }
@@ -319,7 +307,7 @@ public class Graph {
             }
         }
         for (int i = 0; i < 20; i++) {
-            for (Edge e = FirstEdge(i); isEdge(e); e = NextEdge(e)) {
+            for (Edge e = this.getFirstEdge(i); this.isEdge(e); e = this.getNextEdge(e)) {
                 tmpMatrix[e.getFrom()][e.getTo()] = e.getWeight();
                 tmpMatrix[e.getTo()][e.getFrom()] = e.getWeight();
             }

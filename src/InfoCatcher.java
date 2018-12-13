@@ -76,15 +76,6 @@ public class InfoCatcher {
         this.isCapital[num] = isCapital;
     }
 
-    public void setAll(String name, String addr, String tel, int x, int y, boolean isCapital, int num) {
-        this.name[num] = name;
-        this.addr[num] = addr;
-        this.tel[num] = tel;
-        this.x[num] = x;
-        this.y[num] = y;
-        this.isCapital[num] = isCapital;
-    }
-
     public void setAll(String readLine, int num) {
         String[] arr = readLine.split("\\s+");
         this.num[num] = Integer.parseInt(arr[0]);

@@ -16,13 +16,13 @@ public class picturePanel extends JPanel {
     private int indexEnd;
     private int index;
     private int edgeWeight;
-    public final int DRAWMAP = 0;
-    public final int DRAWPOINT = 1;
-    public final int DELETEPOINT = 2;
-    public final int ADDEDGE = 3;
-    public final int DELETEEDGE = 4;
-    public final int SHORTESTPATH = 5;
-    public final int MST = 6;
+    public static final int DRAWMAP = 0;
+    public static final int DRAWPOINT = 1;
+    public static final int DELETEPOINT = 2;
+    public static final int ADDEDGE = 3;
+    public static final int DELETEEDGE = 4;
+    public static final int SHORTESTPATH = 5;
+    public static final int MST = 6;
 
     public picturePanel(Graph g, InfoCatcher i) {
         super();
@@ -97,16 +97,26 @@ public class picturePanel extends JPanel {
 
     private void paintMap(Graphics g) {
         Graphics2D g2 = (Graphics2D) g;
-        g2.clearRect(0, 0, this.getWidth(), this.getHeight());
+        g2.clearRect(-150, -150, this.getWidth()+150, this.getHeight()+150);
         Ellipse2D circle = new Ellipse2D.Double();
         for (int i = 0; i < 20; i++) {
             if (info.getX(i) != -100) {
                 circle.setFrame(info.getX(i) - 30, info.getY(i) - 30, 60, 60);
+                if (info.getIsCapital(i)) {
+                    g2.setColor(Color.GREEN);
+                    g2.fillOval(info.getX(i) - 29, info.getY(i) - 29, 59, 59);
+                } else {
+                    g2.setColor(Color.CYAN);
+                    g2.fillOval(info.getX(i) - 29, info.getY(i) - 29, 59, 59);
+                }
+                g2.setColor(Color.BLACK);
                 g2.draw(circle);
+                g2.drawString(info.getName(i), info.getX(i), info.getY(i));
             }
         }
+        g2.setColor(Color.BLACK);
         for (int i = 0; i < 20; i++) {
-            for (Edge edge = graph.FirstEdge(i); graph.isEdge(edge); edge = graph.NextEdge(edge)) {
+            for (Edge edge = graph.getFirstEdge(i); graph.isEdge(edge); edge = graph.getNextEdge(edge)) {
                 Point2D from = new Point2D.Double(info.getX(edge.getFrom()), info.getY(edge.getFrom()));
                 Point2D to = new Point2D.Double(info.getX(edge.getTo()), info.getY(edge.getTo()));
                 if (from.getX() >= 0 && to.getX() >= 0) {
@@ -116,6 +126,18 @@ public class picturePanel extends JPanel {
                 }
             }
         }
+        this.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent event) {
+                for (int i = 0; i < 20; i++) {
+                    if (event.getX() >= info.getX(i) - 30 && event.getX() <= info.getX(i) + 30
+                            && event.getY() >= info.getY(i) - 30 && event.getY() <= info.getY(i) + 30) {
+                        index = i;
+                        break;
+                    }
+                }
+            }
+        });
     }
 
     private void paintPoint() {
@@ -171,8 +193,8 @@ public class picturePanel extends JPanel {
     }
 
     private void addEdge() {
-        graph.setEdge(indexStart, indexEnd, edgeWeight);
-        graph.setEdge(indexEnd, indexStart, edgeWeight);
+        graph.addEdge(indexStart, indexEnd, edgeWeight);
+        graph.addEdge(indexEnd, indexStart, edgeWeight);
         setPaintMode(DRAWMAP);
         paintComponent();
     }
@@ -212,7 +234,7 @@ public class picturePanel extends JPanel {
         for (int i = 0; graph.isEdge(mst[i]); i++) {
             Line2D line = new Line2D.Double(info.getX(mst[i].getFrom()), info.getY(mst[i].getFrom()),
                     info.getX(mst[i].getTo()), info.getY(mst[i].getTo()));
-            gra.setColor(Color.YELLOW);
+            gra.setColor(Color.BLUE);
             gra.setStroke(new BasicStroke(5));
             gra.draw(line);
         }

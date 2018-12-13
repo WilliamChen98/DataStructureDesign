@@ -2,14 +2,15 @@ public class Edge {
     private int from;
     private int to;
     private int weight;
+    public static final int INFINITY = 100000000;
 
-    Edge() {
+    public Edge() {
         from = -1;
         to = -1;
         weight = -1;
     }
 
-    Edge(int f, int t, int w) {
+    public Edge(int f, int t, int w) {
         from = f;
         to = t;
         weight = w;

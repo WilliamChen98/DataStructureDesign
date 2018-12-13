@@ -1,5 +1,6 @@
 import java.awt.*;
 import java.awt.event.*;
+import java.util.concurrent.locks.*;
 
 import javax.swing.*;
 
@@ -12,6 +13,7 @@ public class GUI extends JFrame {
     private InfoCatcher info;
     private int start;
     private int end;
+    private ReadWriteLock rwlock;
 
     private Container container;
     private picturePanel picturePanel;
@@ -46,10 +48,11 @@ public class GUI extends JFrame {
         this.container = this.getContentPane();
         this.start = 0;
         this.end = 0;
+        this.rwlock = new ReentrantReadWriteLock();
 
         this.loadMap = new JButton("载入地图");
-        this.addNode = new JButton("添加节点");
-        this.deleteNode = new JButton("删除节点");
+        this.addNode = new JButton("添加顶点");
+        this.deleteNode = new JButton("删除顶点");
         this.saveMap = new JButton("保存地图");
         this.changeInformation = new JButton("修改信息");
         this.addEdge = new JButton("添加通路");
@@ -135,25 +138,29 @@ public class GUI extends JFrame {
         this.loadMap.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
+                rwlock.writeLock().lock();
                 picturePanel.setPaintMode(picturePanel.DRAWMAP);
                 picturePanel.paintComponent();
+                rwlock.writeLock().unlock();
             }
 
         });
         this.addNode.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
+                rwlock.writeLock().lock();
                 picturePanel.setPaintMode(picturePanel.DRAWPOINT);
                 picturePanel.paintComponent();
-                picturePanel.setPaintMode(picturePanel.DRAWMAP);
+                rwlock.writeLock().unlock();
             }
         });
         this.deleteNode.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
+                rwlock.writeLock().lock();
                 picturePanel.setPaintMode(picturePanel.DELETEPOINT);
                 picturePanel.paintComponent();
-                picturePanel.setPaintMode(picturePanel.DRAWMAP);
+                rwlock.writeLock().unlock();
             }
         });
         this.saveMap.addActionListener(new ActionListener() {
@@ -172,43 +179,52 @@ public class GUI extends JFrame {
                 catchTextFromTextFieldToInfoCatcher(picturePanel.getIndex());
                 info = picturePanel.getInfo();
                 info.writeLineToFile("src/Info.txt");
+                picturePanel.setPaintMode(picturePanel.DRAWMAP);
+                picturePanel.paintComponent();
             }
         });
         this.addEdge.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
+                rwlock.writeLock().lock();
                 catchStartAndEndIndex();
                 picturePanel.setStartAndEndIndex(start, end);
                 picturePanel.setEdgeWeight(Integer.parseInt(weight.getText()));
                 picturePanel.setPaintMode(picturePanel.ADDEDGE);
                 picturePanel.paintComponent();
+                rwlock.writeLock().unlock();
             }
         });
         this.delEdge.addActionListener(new ActionListener() {
-
             @Override
             public void actionPerformed(ActionEvent e) {
+                rwlock.writeLock().lock();
                 catchStartAndEndIndex();
                 picturePanel.setStartAndEndIndex(start, end);
                 picturePanel.setPaintMode(picturePanel.DELETEEDGE);
                 picturePanel.paintComponent();
+                rwlock.writeLock().unlock();
             }
 
         });
         this.shortestPath.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
+                rwlock.writeLock().lock();
                 catchStartAndEndIndex();
                 picturePanel.setStartAndEndIndex(start, end);
                 picturePanel.setPaintMode(picturePanel.SHORTESTPATH);
                 picturePanel.paintComponent();
+                rwlock.writeLock().unlock();
             }
         });
         this.minSpanTree.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
+                rwlock.writeLock().lock();
                 picturePanel.setPaintMode(picturePanel.MST);
                 picturePanel.paintComponent();
+                rwlock.writeLock().unlock();
             }
         });
         this.picturePanel.addMouseListener(new MouseAdapter() {
@@ -374,11 +390,8 @@ public class GUI extends JFrame {
     private void catchTextFromTextFieldToInfoCatcher(int num) {
         this.info.setName(this.companyName.getText(), num);
         this.info.setAddr(this.companyAddress.getText(), num);
-        ;
         this.info.setTel(this.companyTel.getText(), num);
-        ;
         this.info.setIsCapital(Boolean.parseBoolean(this.companyIsCapital.getText()), num);
-        ;
     }
 
     private void catchStartAndEndIndex() {
@@ -391,5 +404,4 @@ public class GUI extends JFrame {
             }
         }
     }
-
 }
