@@ -118,16 +118,11 @@ public class Graph {
         while (temp.getNext() != null && temp.getNext().getVertex() != toVertex) {
             temp = temp.getNext();
         }
+        
         if (temp.getNext() == null) {
             return;
         }
         if (temp.getNext().getVertex() > toVertex) {
-            return;
-        }
-        if (temp.getVertex() == toVertex) {
-            temp = null;
-            numEdge--;
-            Indegree[toVertex]--;
             return;
         }
         if (temp.getNext().getVertex() == toVertex) {

@@ -1,6 +1,5 @@
 import java.awt.*;
 import java.awt.event.*;
-import java.util.concurrent.locks.*;
 
 import javax.swing.*;
 
@@ -13,10 +12,9 @@ public class GUI extends JFrame {
     private InfoCatcher info;
     private int start;
     private int end;
-    private ReadWriteLock rwlock;
 
     private Container container;
-    private picturePanel picturePanel;
+    private picturePanel picture;
 
     private JButton loadMap;
     private JButton addNode;
@@ -48,7 +46,6 @@ public class GUI extends JFrame {
         this.container = this.getContentPane();
         this.start = 0;
         this.end = 0;
-        this.rwlock = new ReentrantReadWriteLock();
 
         this.loadMap = new JButton("载入地图");
         this.addNode = new JButton("添加顶点");
@@ -102,7 +99,7 @@ public class GUI extends JFrame {
                 layout.createParallelGroup().addComponent(companyIsCapitalLabel).addComponent(companyIsCapital));
         layout.setVerticalGroup(vGroupForInformation);
 
-        this.startCompany = new JTextField("defaultName1");
+        this.startCompany = new JTextField("马甸");
         this.endCompany = new JTextField("defaultName2");
         this.weight = new JTextField("-1");
         JLabel edgeTitle = new JLabel("边相关设置");
@@ -132,102 +129,87 @@ public class GUI extends JFrame {
         vGroupForEdge.addGroup(layout.createParallelGroup().addComponent(weightLabel).addComponent(weight));
         layout.setVerticalGroup(vGroupForEdge);
 
-        this.picturePanel = new picturePanel(this.graph, this.info);
+        this.picture = new picturePanel(this.graph, this.info);
         /* Initialize picturePanel,which is to display the graph */
 
         this.loadMap.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                rwlock.writeLock().lock();
-                picturePanel.setPaintMode(picturePanel.DRAWMAP);
-                picturePanel.paintComponent();
-                rwlock.writeLock().unlock();
+                picture.setPaintMode(picturePanel.DRAWMAP);
+                picture.paintComponent();
             }
 
         });
         this.addNode.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                rwlock.writeLock().lock();
-                picturePanel.setPaintMode(picturePanel.DRAWPOINT);
-                picturePanel.paintComponent();
-                rwlock.writeLock().unlock();
+                picture.setPaintMode(picturePanel.DRAWPOINT);
+                picture.paintComponent();
             }
         });
         this.deleteNode.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                rwlock.writeLock().lock();
-                picturePanel.setPaintMode(picturePanel.DELETEPOINT);
-                picturePanel.paintComponent();
-                rwlock.writeLock().unlock();
+                picture.setPaintMode(picturePanel.DELETEPOINT);
+                picture.paintComponent();
             }
         });
         this.saveMap.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                graph = picturePanel.getGraph();
+                graph = picture.getGraph();
                 graph.writeMatrixToFile("src/Matrix.txt");
-                info = picturePanel.getInfo();
+                info = picture.getInfo();
                 info.writeLineToFile("src/Info.txt");
             }
         });
         this.changeInformation.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                picturePanel.setPaintMode(picturePanel.DRAWMAP);
-                catchTextFromTextFieldToInfoCatcher(picturePanel.getIndex());
-                info = picturePanel.getInfo();
+                catchTextFromTextFieldToInfoCatcher(picture.getIndex());
+                info = picture.getInfo();
                 info.writeLineToFile("src/Info.txt");
-                picturePanel.setPaintMode(picturePanel.DRAWMAP);
-                picturePanel.paintComponent();
+                picture.setPaintMode(picturePanel.DRAWMAP);
+                picture.paintComponent();
             }
         });
         this.addEdge.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                rwlock.writeLock().lock();
                 catchStartAndEndIndex();
-                picturePanel.setStartAndEndIndex(start, end);
-                picturePanel.setEdgeWeight(Integer.parseInt(weight.getText()));
-                picturePanel.setPaintMode(picturePanel.ADDEDGE);
-                picturePanel.paintComponent();
-                rwlock.writeLock().unlock();
+                picture.setStartAndEndIndex(start, end);
+                picture.setEdgeWeight(Integer.parseInt(weight.getText()));
+                picture.setPaintMode(picturePanel.ADDEDGE);
+                picture.paintComponent();
             }
         });
         this.delEdge.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                rwlock.writeLock().lock();
                 catchStartAndEndIndex();
-                picturePanel.setStartAndEndIndex(start, end);
-                picturePanel.setPaintMode(picturePanel.DELETEEDGE);
-                picturePanel.paintComponent();
-                rwlock.writeLock().unlock();
+                picture.setStartAndEndIndex(start, end);
+                picture.setPaintMode(picturePanel.DELETEEDGE);
+                picture.paintComponent();
             }
 
         });
         this.shortestPath.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                rwlock.writeLock().lock();
                 catchStartAndEndIndex();
-                picturePanel.setStartAndEndIndex(start, end);
-                picturePanel.setPaintMode(picturePanel.SHORTESTPATH);
-                picturePanel.paintComponent();
-                rwlock.writeLock().unlock();
+                picture.setStartAndEndIndex(start, end);
+                picture.setPaintMode(picturePanel.SHORTESTPATH);
+                picture.paintComponent();
             }
         });
         this.minSpanTree.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                rwlock.writeLock().lock();
-                picturePanel.setPaintMode(picturePanel.MST);
-                picturePanel.paintComponent();
-                rwlock.writeLock().unlock();
+                picture.setPaintMode(picturePanel.MST);
+                picture.paintComponent();
             }
         });
-        this.picturePanel.addMouseListener(new MouseAdapter() {
+        this.picture.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent event) {
                 for (int i = 0; i < 20; i++) {
@@ -351,7 +333,7 @@ public class GUI extends JFrame {
         constraint.weightx = 1.0;
         constraint.weighty = 1.0;
         constraint.fill = GridBagConstraints.BOTH;
-        container.add(picturePanel, constraint);
+        container.add(picture, constraint);
 
         constraint = new GridBagConstraints();
         constraint.gridy = 2;

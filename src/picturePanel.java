@@ -15,6 +15,7 @@ public class picturePanel extends JPanel {
     private int indexStart;
     private int indexEnd;
     private int index;
+    private Point2D point;
     private int edgeWeight;
     public static final int DRAWMAP = 0;
     public static final int DRAWPOINT = 1;
@@ -31,6 +32,20 @@ public class picturePanel extends JPanel {
         this.paintMode = 0;
         this.setVisible(true);
         this.edgeWeight = -1;
+        this.point = new Point2D.Double();
+        this.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent event) {
+                point = new Point2D.Double(event.getX(),event.getY());
+                for (int i = 0; i < 20; i++) {
+                    if (event.getX() >= info.getX(i) - 30 && event.getX() <= info.getX(i) + 30
+                            && event.getY() >= info.getY(i) - 30 && event.getY() <= info.getY(i) + 30) {
+                        index = i;
+                        break;
+                    }
+                }
+            }
+        });
     }
 
     public Graph getGraph() {
@@ -126,70 +141,37 @@ public class picturePanel extends JPanel {
                 }
             }
         }
-        this.addMouseListener(new MouseAdapter() {
-            @Override
-            public void mouseClicked(MouseEvent event) {
-                for (int i = 0; i < 20; i++) {
-                    if (event.getX() >= info.getX(i) - 30 && event.getX() <= info.getX(i) + 30
-                            && event.getY() >= info.getY(i) - 30 && event.getY() <= info.getY(i) + 30) {
-                        index = i;
-                        break;
-                    }
-                }
-            }
-        });
+        
     }
 
     private void paintPoint() {
-        this.addMouseListener(new MouseAdapter() {
-            @Override
-            public void mouseClicked(MouseEvent event) {
-                int i = 0;
-                for (i = 0; i < 20; i++) {
-                    if (info.getX(i) == -100) {
-                        break;
-                    }
-                }
-                if (i < 20) {
-                    info.setX(event.getX(), i);
-                    info.setY(event.getY(), i);
-                }
-                setPaintMode(DRAWMAP);
-                paintComponent();
+        int i = 0;
+        for (i = 0; i < 20; i++) {
+            if (info.getX(i) == -100) {
+                break;
             }
-        });
+        }
+        if (i < 20) {
+            info.setX((int)point.getX(), i);
+            info.setY((int)point.getY(), i);
+        }
         setPaintMode(DRAWMAP);
+        paintComponent();
     }
 
     private void deletePoint() {
-        this.addMouseListener(new MouseAdapter() {
-            @Override
-            public void mouseClicked(MouseEvent event) {
-                int i = 0;
-                for (i = 0; i < 20; i++) {
-                    if (event.getX() >= info.getX(i) - 30 && event.getX() <= info.getX(i) + 30
-                            && event.getY() >= info.getY(i) - 30 && event.getY() <= info.getY(i) + 30) {
-                        Graphics2D g = (Graphics2D) getGraphics();
-                        g.clearRect(info.getX(i) - 30, info.getY(i) - 30, 61, 61);
-                        g.clearRect(event.getX() - 30, event.getY() - 30, 61, 61);
-                        info.setName("defaultName", i);
-                        info.setAddr("defaultAddr", i);
-                        info.setTel("00000000", i);
-                        info.setX(-100, i);
-                        info.setY(-100, i);
-                        info.setIsCapital(false, i);
-                        for (int j = 0; j < 20; j++) {
-                            graph.delEdge(i, j);
-                            graph.delEdge(j, i);
-                        }
-                        break;
-                    }
-                }
-                setPaintMode(DRAWMAP);
-                paintComponent();
-            }
-        });
+        info.setName("defaultName", index);
+        info.setAddr("defaultAddr", index);
+        info.setTel("0000-0000", index);
+        info.setX(-100, index);
+        info.setY(-100, index);
+        info.setIsCapital(false, index);
+        for (int j = 0; j < 20; j++) {
+            graph.delEdge(index, j);
+            graph.delEdge(j, index);
+        }
         setPaintMode(DRAWMAP);
+        paintComponent();
     }
 
     private void addEdge() {
